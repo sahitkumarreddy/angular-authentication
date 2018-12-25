@@ -3,6 +3,7 @@ const User = require('../models/user')
 const jwt = require ('jsonwebtoken')
 const mongoose = require('mongoose')
 const router = express.Router()
+const { check, validationResult } = require('express-validator/check');
 //const db = "mongodb://sahitkumarreddy:"+encodeURIComponent("Skr@0450")+"@ds229008.mlab.com:29008/eventsdb"
 const db="mongodb+srv://sahitkumarreddy:"+encodeURIComponent("Skr@0450")+"@cluster0-04xrm.mongodb.net/test?retryWrites=true"
 mongoose.connect(db,{ useNewUrlParser: true },err =>{
@@ -36,10 +37,43 @@ router.get('/',(req,res)=>{
     res.send('From API route')
 })
 
-router.post('/register', (req,res) => {
-		let userData = req.body
-	
-		let user = new User(userData)
+router.post('/register',[  check('email')
+.isEmail().withMessage('Please enter a valid email address')
+.trim()
+.normalizeEmail()
+.custom(value => {
+    return findUserByEmail(value).then(User => {
+      //if user email already exists throw an error
+  })
+}),
+check('password','Password cannot be left blank')
+    .isLength({ min: 1 })], 
+    
+    (req,res) => {
+        let userData = req.body
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {     
+        
+       res.json({status : "error", message : errors.array()});
+
+    } else {
+
+        hmac = crypto.createHmac("sha1", 'auth secret');
+        var encpassword = '';
+
+        if(req.body.password){
+          hmac.update(req.body.password);
+          encpassword = hmac.digest("hex");
+        }
+
+        var document = {
+            email:       req.body.email, 
+            password:    encpassword
+          };
+
+		let user = new User(document)
 		user.save((error,registeredUser) => {
 			if(error){
 				console.error("Error::"+error)
@@ -48,7 +82,8 @@ router.post('/register', (req,res) => {
                 let token = jwt.sign(payload, 'secretKey')
 				res.status(200).send({token})
 			}
-		})
+        })
+    }
 })
 
 router.post('/login', (req,res) =>{
@@ -107,5 +142,19 @@ router.get('/specialevents', verifyToken, (req,res) =>{
     ]
     res.json(events)
 })
+
+function findUserByEmail(email){
+
+    if(email){
+        return new Promise((resolve, reject) => {
+          User.findOne({ email: email })
+            .exec((err, doc) => {
+              if (err) return reject(err)
+              if (doc) return reject(new Error('This email already exists. Please enter another email.'))
+              else return resolve(email)
+            })
+        })
+      }
+   }
 
 module.exports = router

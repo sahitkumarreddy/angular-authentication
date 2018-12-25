@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
+  errorMsg="";
   loginUserdata = {};
   constructor(private _authService: AuthService,private _router:Router) { }
 
@@ -23,7 +23,9 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('token',res.token)
           this._router.navigate(['/specialevents'])
         },
-        err => console.log(err)
+        err => {
+          return this.errorMsg=err.statusText,console.log(err)
+        }
       )
   }
 

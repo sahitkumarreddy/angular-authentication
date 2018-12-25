@@ -1,20 +1,29 @@
 <div class="row pt-5">
 <div class="col-md-6 mx-auto">
+    <div class="alert alert-danger" *ngIf="errorMsg"> {{errorMsg}}</div>
    <div class="card rounded-0">
      <div class="card-header">
        <h3 class = "mb-0">Register</h3>
      </div>
      <div class="card-body">
-       <form class="form">
+      <form class="form" #registerForm='ngForm' novalidate>
         <div class="form-group">
           <label for="Email">Email address</label>
-          <input type="email" [(ngModel)]="registerUserdata.email" name= "email" class="form-control rounded-0" id="email" aria-describedby="email" placeholder="Enter email" required/>
+          <input type="email" [(ngModel)]="registerUserdata.email" name= "email" class="form-control rounded-0" id="email" aria-describedby="email" 
+          #email="ngModel" placeholder="Enter email"  pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" 
+          [class.is-invalid]="email.invalid && email.touched" required/>
+
+          <small class="text-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
+              Email is required </small>
+            <small class="text-danger" *ngIf="email.errors && email.errors.pattern">:Enter valid email </small>
         </div>
+       
         <div class="form-group">
           <label for="exampleInputPassword1">Password</label>
-          <input type="password" [(ngModel)]="registerUserdata.password" name= "password" class="form-control rounded-0" id="password" placeholder="Password" required/>
+          <input type="password" [(ngModel)]="registerUserdata.password" name= "password" class="form-control rounded-0" id="password" 
+          #password="ngModel" placeholder="Password" [class.is-invalid]="password.invalid && password.touched" required/>
         </div>
-        <button type="button" (click)="registerUser()" class="btn btn-primary float-right">Register</button>
+        <button type="button" [disabled]="registerForm.form.invalid" (click)="registerUser()" class="btn btn-primary float-right">Register</button>
        </form>
      </div>
    </div>

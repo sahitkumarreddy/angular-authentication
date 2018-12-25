@@ -1,4 +1,5 @@
 <div class="row mt-5">
+    <div class="alert alert-danger" *ngIf="errorMsg"> {{errorMsg}}</div>
   <div class="col-md-4 mb-3" *ngFor="let event of regularEvents">
       <div class="card text-center">
           

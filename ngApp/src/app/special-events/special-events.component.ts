@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 export class SpecialEventsComponent implements OnInit {
 
   constructor(private _eventService: EventService, private _router: Router) { }
-
+  errorMsg =""
   specialEvents =[]
 
   ngOnInit() {
@@ -24,6 +24,7 @@ export class SpecialEventsComponent implements OnInit {
                this._router.navigate(['/login'])
             }
           }
+            return this.errorMsg=err.statusText,console.log(err)     
         }
       )
   }
