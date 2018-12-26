@@ -4,8 +4,7 @@ const jwt = require ('jsonwebtoken')
 const mongoose = require('mongoose')
 const router = express.Router()
 const { check, validationResult } = require('express-validator/check');
-//const db = "mongodb://sahitkumarreddy:"+encodeURIComponent("Skr@0450")+"@ds229008.mlab.com:29008/eventsdb"
-const db="mongodb+srv://sahitkumarreddy:"+encodeURIComponent("Skr@0450")+"@cluster0-04xrm.mongodb.net/test?retryWrites=true"
+const db="mongodb+srv://userName:password@cluster0-04xrm.mongodb.net/test?retryWrites=true"
 mongoose.connect(db,{ useNewUrlParser: true },err =>{
     if(err){
        console.error("Error::"+err)
